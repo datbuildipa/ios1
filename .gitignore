@@ -1,0 +1,15 @@
+build/
+*/build/
+.gradle/
+.gradle-home/
+.idea/
+DerivedData/
+*.rar
+*.7z
+*.ipa
+*.apk
+output/
+*.DS_Store
+Data/resources.assets.resS
+Data/Raw/nso.spn
+Libraries/libiPhone-lib.a
