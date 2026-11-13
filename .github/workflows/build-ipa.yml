@@ -9,9 +9,11 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          lfs: true
       - name: Auto-detect Xcode Project/Workspace & Build Unsigned App
         run: |
-          set -e
+          set -euo pipefail
           WS=$(find . -maxdepth 3 -name "*.xcworkspace" ! -path "*/.xcodeproj/*" | head -n 1)
           PROJ=$(find . -maxdepth 3 -name "*.xcodeproj" | head -n 1)
           SCHEME="Unity-iPhone"
@@ -24,12 +26,13 @@ jobs:
           fi
           echo "Using Scheme: $SCHEME"
           if [ -n "$WS" ]; then
-            xcodebuild build -workspace "$WS" -scheme "$SCHEME" -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SYMROOT="$PWD/build"
+            xcodebuild build -workspace "$WS" -scheme "$SCHEME" -sdk iphoneos -configuration Release ARCHS=arm64 ONLY_ACTIVE_ARCH=NO ENABLE_BITCODE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SYMROOT="$PWD/build"
           else
-            xcodebuild build -project "$PROJ" -scheme "$SCHEME" -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SYMROOT="$PWD/build"
+            xcodebuild build -project "$PROJ" -scheme "$SCHEME" -sdk iphoneos -configuration Release ARCHS=arm64 ONLY_ACTIVE_ARCH=NO ENABLE_BITCODE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SYMROOT="$PWD/build"
           fi
           mkdir -p Payload
           APP_PATH=$(find "$PWD/build" -name "*.app" | head -n 1)
+          test -n "$APP_PATH" && test -d "$APP_PATH"
           cp -R "$APP_PATH" Payload/
           zip -r UnsignedApp.ipa Payload
       - name: Upload IPA Artifact
