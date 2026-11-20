@@ -3,6 +3,9 @@ on:
   push:
     branches: [ "main", "master" ]
   workflow_dispatch:
+concurrency:
+  group: projectll-ios-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build-ipa:
     runs-on: macos-latest
