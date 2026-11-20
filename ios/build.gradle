@@ -1,0 +1,53 @@
+buildscript {
+    repositories { mavenCentral() }
+    dependencies { classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.20' }
+}
+
+if (rootProject == project) {
+    allprojects {
+        apply plugin: 'eclipse'
+        ext.appName = 'LangLaMeme'
+        repositories { mavenCentral() }
+    }
+    apply plugin: 'java-library'
+    apply plugin: 'robovm'
+    project(':core') {
+        apply plugin: 'java-library'
+        dependencies {
+            api 'com.badlogicgames.gdx:gdx:1.12.1'
+            implementation 'com.badlogicgames.gdx:gdx-freetype:1.12.1'
+        }
+    }
+    dependencies {
+        implementation project(':core')
+        api 'com.mobidevelop.robovm:robovm-rt:2.3.20'
+        api 'com.mobidevelop.robovm:robovm-cocoatouch:2.3.20'
+        api 'com.mobidevelop.robovm:robovm-objc:2.3.20'
+        api 'com.badlogicgames.gdx:gdx-backend-robovm-metalangle:1.12.1'
+        api 'com.badlogicgames.gdx:gdx-platform:1.12.1:natives-ios'
+        api 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
+        api 'com.badlogicgames.gdx:gdx-freetype:1.12.1'
+        api 'com.badlogicgames.gdx:gdx-freetype-platform:1.12.1:natives-ios'
+    }
+}
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+ext {
+	mainClassName = "com.mygdx.game.IOSLauncher"
+}
+
+launchIPhoneSimulator.dependsOn build
+launchIPadSimulator.dependsOn build
+launchIOSDevice.dependsOn build
+createIPA.dependsOn build
+
+robovm {
+	archs = "arm64"
+    iosSkipSigning = true
+}
+
+eclipse.project.name = appName + "-ios"

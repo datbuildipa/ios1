@@ -1,0 +1,3 @@
+rootProject.name = 'LangLaIOS'
+include ':core'
+project(':core').projectDir = file('../core')
